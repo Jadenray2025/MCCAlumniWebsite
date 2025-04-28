@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spruce Pine Weather</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4B0082; /* Purple */
+            --secondary-color: #2E8B57; /* Green */
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .weather-container {
+            background: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            border: 2px solid var(--secondary-color);
+        }
+
+        .location {
+            margin-bottom: 20px;
+        }
+
+        .location h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .date {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .weather-icon {
+            font-size: 64px;
+            margin: 20px 0;
+            color: var(--secondary-color);
+        }
+
+        .temperature {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .detail-item {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--secondary-color);
+        }
+
+        .detail-item i {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading i {
+            font-size: 24px;
+            color: var(--secondary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #E74C3C;
+            padding: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-container">
+        <div class="location">
+            <h1>Spruce Pine, NC</h1>
+            <div class="date" id="current-date"></div>
+        </div>
+
+        <div class="loading">
+            <i class="fas fa-spinner"></i>
+            <p>Loading weather data...</p>
+        </div>
+
+        <div class="error">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>Unable to load weather data. Please try again later.</p>
+        </div>
+
+        <div class="weather-content">
+            <div class="weather-icon" id="weather-icon"></div>
+            <div class="temperature" id="temperature"></div>
+            <div class="description" id="description"></div>
+            
+            <div class="details">
+                <div class="detail-item">
+                    <i class="fas fa-wind"></i>
+                    <div class="detail-label">Wind Speed</div>
+                    <div class="detail-value" id="wind-speed"></div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-tint"></i>
+                    <div class="detail-label">Humidity</div>
+                    <div class="detail-value" id="humidity"></div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-sun"></i>
+                    <div class="detail-label">UV Index</div>
+                    <div class="detail-value" id="uv-index"></div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-compress-arrows-alt"></i>
+                    <div class="detail-label">Pressure</div>
+                    <div class="detail-value" id="pressure"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Spruce Pine, NC coordinates
+        const LATITUDE = 35.9129;
+        const LONGITUDE = -82.0646;
+
+        const weatherContent = document.querySelector('.weather-content');
+        const loading = document.querySelector('.loading');
+        const error = document.querySelector('.error');
+
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function getWeatherIcon(weatherCode) {
+            const iconMap = {
+                0: 'fa-sun', // Clear sky
+                1: 'fa-cloud-sun', // Mainly clear
+                2: 'fa-cloud', // Partly cloudy
+                3: 'fa-cloud', // Overcast
+                45: 'fa-smog', // Fog
+                48: 'fa-smog', // Depositing rime fog
+                51: 'fa-cloud-rain', // Light drizzle
+                53: 'fa-cloud-rain', // Moderate drizzle
+                55: 'fa-cloud-rain', // Dense drizzle
+                61: 'fa-cloud-rain', // Slight rain
+                63: 'fa-cloud-rain', // Moderate rain
+                65: 'fa-cloud-rain', // Heavy rain
+                71: 'fa-snowflake', // Slight snow
+                73: 'fa-snowflake', // Moderate snow
+                75: 'fa-snowflake', // Heavy snow
+                77: 'fa-snowflake', // Snow grains
+                80: 'fa-cloud-rain', // Slight rain showers
+                81: 'fa-cloud-rain', // Moderate rain showers
+                82: 'fa-cloud-rain', // Violent rain showers
+                85: 'fa-snowflake', // Slight snow showers
+                86: 'fa-snowflake', // Heavy snow showers
+                95: 'fa-bolt', // Thunderstorm
+                96: 'fa-bolt', // Thunderstorm with slight hail
+                99: 'fa-bolt' // Thunderstorm with heavy hail
+            };
+            return iconMap[weatherCode] || 'fa-cloud';
+        }
+
+        async function fetchWeatherData() {
+            try {
+                loading.style.display = 'block';
+                weatherContent.style.display = 'none';
+                error.style.display = 'none';
+
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,pressure_msl,weather_code,precipitation_probability&timezone=America%2FNew_York&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch`);
+                
+                if (!response.ok) {
+                    throw new Error('Weather data not available');
+                }
+
+                const data = await response.json();
+
+                // Update weather information
+                document.getElementById('temperature').textContent = `${Math.round(data.current.temperature_2m)}°F`;
+                document.getElementById('description').textContent = getWeatherDescription(data.current.weather_code);
+                document.getElementById('wind-speed').textContent = `${Math.round(data.current.wind_speed_10m)} mph`;
+                document.getElementById('humidity').textContent = `${data.current.relative_humidity_2m}%`;
+                document.getElementById('pressure').textContent = `${Math.round(data.current.pressure_msl)} hPa`;
+
+                // Set weather icon
+                const iconClass = getWeatherIcon(data.current.weather_code);
+                document.getElementById('weather-icon').className = `weather-icon fas ${iconClass}`;
+
+                // Get current UV index
+                const uvResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&hourly=uv_index&timezone=America%2FNew_York`);
+                const uvData = await uvResponse.json();
+                const currentHour = new Date().getHours();
+                const uvIndex = uvData.hourly.uv_index[currentHour];
+                document.getElementById('uv-index').textContent = uvIndex.toFixed(1);
+
+                loading.style.display = 'none';
+                weatherContent.style.display = 'block';
+            } catch (err) {
+                console.error('Error fetching weather data:', err);
+                loading.style.display = 'none';
+                error.style.display = 'block';
+            }
+        }
+
+        function getWeatherDescription(weatherCode) {
+            const descriptions = {
+                0: 'Clear sky',
+                1: 'Mainly clear',
+                2: 'Partly cloudy',
+                3: 'Overcast',
+                45: 'Foggy',
+                48: 'Foggy with rime',
+                51: 'Light drizzle',
+                53: 'Moderate drizzle',
+                55: 'Dense drizzle',
+                61: 'Light rain',
+                63: 'Moderate rain',
+                65: 'Heavy rain',
+                71: 'Light snow',
+                73: 'Moderate snow',
+                75: 'Heavy snow',
+                77: 'Snow grains',
+                80: 'Light rain showers',
+                81: 'Moderate rain showers',
+                82: 'Heavy rain showers',
+                85: 'Light snow showers',
+                86: 'Heavy snow showers',
+                95: 'Thunderstorm',
+                96: 'Thunderstorm with hail',
+                99: 'Thunderstorm with heavy hail'
+            };
+            return descriptions[weatherCode] || 'Unknown weather condition';
+        }
+
+        // Initial load
+        updateDateTime();
+        fetchWeatherData();
+
+        // Update every hour
+        setInterval(fetchWeatherData, 3600000);
+        // Update date every minute
+        setInterval(updateDateTime, 60000);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,41 @@
+{
+  "rules": {
+    "messages": {
+      ".indexOn": ["timestamp"],
+      ".read": true,
+      ".write": true,
+      "$messageId": {
+        ".validate": "newData.hasChildren(['text', 'username', 'timestamp', 'ip', 'expiresAt'])",
+        "text": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 1000"
+        },
+        "username": {
+          ".validate": "newData.isString()"
+        },
+        "timestamp": {
+          ".validate": "newData.isNumber() && newData.val() <= now"
+        },
+        "ip": {
+          ".validate": "newData.isString()"
+        },
+        "expiresAt": {
+          ".validate": "newData.isNumber() && newData.val() > now"
+        }
+      }
+    },
+    "users": {
+      ".indexOn": ["status"],
+      ".read": true,
+      "$username": {
+        ".write": "auth != null || newData.child('status').val() === 'offline' || (!data.exists() && newData.child('status').val() === 'online')",
+        ".validate": "newData.hasChildren(['status', 'lastActive'])",
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'online' || newData.val() === 'offline')"
+        },
+        "lastActive": {
+          ".validate": "newData.isNumber() && newData.val() <= now"
+        }
+      }
+    }
+  }
+} 

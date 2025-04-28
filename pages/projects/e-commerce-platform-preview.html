@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raize - Premium Double-Edged Razor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #002347; /* Midnight Blue */
+            --secondary-color: #FD7702; /* Orange */
+            --accent-color: #FF9800; /* Light Orange */
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .lightning-bolt {
+            color: #002347;
+            font-size: 24px;
+            transform: rotate(-15deg);
+            display: inline-block;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            color: white;
+            font-size: 24px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        .product-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            background: var(--primary-color);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .product-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+        }
+
+        .product-image {
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            object-fit: cover;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .product-title {
+            font-size: 32px;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 24px;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .product-description {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .features li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            color: white;
+        }
+
+        .features li:before {
+            content: "✓";
+            color: var(--secondary-color);
+            position: absolute;
+            left: 0;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .quantity-btn {
+            background: var(--light-gray);
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+        }
+
+        .add-to-cart {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background-color: var(--accent-color);
+        }
+
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100vh;
+            background: var(--primary-color);
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            z-index: 1000;
+            color: white;
+        }
+
+        .cart-modal.active {
+            display: block;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cart-header h2 {
+            color: white;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .cart-items {
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            color: white;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .checkout-btn:hover {
+            background-color: var(--accent-color);
+        }
+
+        .reviews-section {
+            background: var(--primary-color);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            margin-top: 40px;
+            color: white;
+        }
+
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .average-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stars {
+            color: var(--secondary-color);
+            font-size: 24px;
+        }
+
+        .review-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .review-author {
+            font-weight: bold;
+        }
+
+        .review-date {
+            color: #aaa;
+        }
+
+        .review-rating {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .review-form {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .star {
+            cursor: pointer;
+            font-size: 24px;
+            color: #666;
+        }
+
+        .star.active {
+            color: var(--secondary-color);
+        }
+
+        .submit-review {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .submit-review:hover {
+            background-color: var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .product-container {
+                grid-template-columns: 1fr;
+            }
+
+            .product-image {
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                RAIZE<i class="fas fa-bolt lightning-bolt"></i>
+            </div>
+            <div class="cart-icon" onclick="toggleCart()">
+                🛒
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="product-container">
+            <div class="product-image-container">
+                <img src="../../images/Raize.png" 
+                     alt="Raize Double-Edged Razor" 
+                     class="product-image">
+            </div>
+            <div class="product-info">
+                <h1 class="product-title">Raize Double-Edged Razor</h1>
+                <div class="product-price">$49.99</div>
+                <p class="product-description">
+                    Experience the perfect shave with Raize, our premium double-edged razor. Designed for both beginners and experienced shavers, Raize offers a superior shaving experience with its precision-engineered design and premium materials.
+                </p>
+                <ul class="features">
+                    <li>Precision-machined stainless steel construction</li>
+                    <li>Ergonomic handle for perfect grip and control</li>
+                    <li>Compatible with all standard double-edged blades</li>
+                    <li>Perfect for face, head, and body shaving</li>
+                    <li>Lifetime durability with proper care</li>
+                </ul>
+                <div class="quantity-selector">
+                    <button class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                    <input type="number" class="quantity-input" id="quantity" value="1" min="1">
+                    <button class="quantity-btn" onclick="increaseQuantity()">+</button>
+                </div>
+                <button class="add-to-cart" onclick="addToCart()">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button class="close-cart" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be added here dynamically -->
+        </div>
+        <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+    </div>
+
+    <div class="reviews-section">
+        <div class="reviews-header">
+            <h2>Customer Reviews</h2>
+            <div class="average-rating">
+                <div class="stars">★★★★★</div>
+                <span>4.8 (128 reviews)</span>
+            </div>
+        </div>
+
+        <div id="reviews-container">
+            <div class="review-card">
+                <div class="review-header">
+                    <span class="review-author">Michael S.</span>
+                    <span class="review-date">March 15, 2024</span>
+                </div>
+                <div class="review-rating">★★★★★</div>
+                <p>"The Raize razor is absolutely fantastic! The weight and balance are perfect, and it gives me the closest shave I've ever had. Highly recommend!"</p>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <span class="review-author">Sarah L.</span>
+                    <span class="review-date">March 10, 2024</span>
+                </div>
+                <div class="review-rating">★★★★★</div>
+                <p>"I was skeptical about switching to a double-edged razor, but Raize made the transition so easy. The ergonomic handle makes it comfortable to use, and the results are amazing."</p>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <span class="review-author">David R.</span>
+                    <span class="review-date">March 5, 2024</span>
+                </div>
+                <div class="review-rating">★★★★☆</div>
+                <p>"Great razor overall. The build quality is excellent, and it's very durable. Only giving 4 stars because it took me a few tries to get used to the angle."</p>
+            </div>
+        </div>
+
+        <div class="review-form">
+            <h3>Write a Review</h3>
+            <form id="review-form">
+                <div class="form-group">
+                    <label for="reviewer-name">Your Name</label>
+                    <input type="text" id="reviewer-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Rating</label>
+                    <div class="star-rating" id="star-rating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="review-text">Your Review</label>
+                    <textarea id="review-text" required></textarea>
+                </div>
+                <button type="submit" class="submit-review">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        const cartModal = document.getElementById('cartModal');
+        const cartCount = document.getElementById('cartCount');
+        const cartItems = document.getElementById('cartItems');
+
+        function toggleCart() {
+            cartModal.classList.toggle('active');
+        }
+
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+        }
+
+        function updateCartDisplay() {
+            cartItems.innerHTML = '';
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                `;
+                cartItems.appendChild(cartItem);
+            });
+        }
+
+        function addToCart() {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const product = {
+                name: 'Raize Double-Edged Razor',
+                price: 49.99,
+                quantity: quantity
+            };
+            cart.push(product);
+            updateCartCount();
+            updateCartDisplay();
+            alert('Added to cart!');
+        }
+
+        function increaseQuantity() {
+            const input = document.getElementById('quantity');
+            input.value = parseInt(input.value) + 1;
+        }
+
+        function decreaseQuantity() {
+            const input = document.getElementById('quantity');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            alert(`Proceeding to checkout. Total: $${total.toFixed(2)}`);
+            // Here you would typically redirect to a checkout page
+        }
+
+        // Review functionality
+        const starRating = document.getElementById('star-rating');
+        const stars = starRating.querySelectorAll('.star');
+        let selectedRating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = parseInt(star.dataset.rating);
+                selectedRating = rating;
+                stars.forEach((s, index) => {
+                    s.classList.toggle('active', index < rating);
+                });
+            });
+        });
+
+        document.getElementById('review-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('reviewer-name').value;
+            const text = document.getElementById('review-text').value;
+            
+            if (!selectedRating) {
+                alert('Please select a rating');
+                return;
+            }
+
+            const reviewCard = document.createElement('div');
+            reviewCard.className = 'review-card';
+            reviewCard.innerHTML = `
+                <div class="review-header">
+                    <span class="review-author">${name}</span>
+                    <span class="review-date">${new Date().toLocaleDateString()}</span>
+                </div>
+                <div class="review-rating">${'★'.repeat(selectedRating)}${'☆'.repeat(5-selectedRating)}</div>
+                <p>${text}</p>
+            `;
+
+            document.getElementById('reviews-container').prepend(reviewCard);
+            
+            // Reset form
+            document.getElementById('review-form').reset();
+            stars.forEach(star => star.classList.remove('active'));
+            selectedRating = 0;
+            
+            alert('Thank you for your review!');
+        });
+    </script>
+</body>
+</html> 

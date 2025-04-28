@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KNOW-ME-NOT - Anonymous Social Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, orderByChild, startAt, query, onChildAdded, get, onChildRemoved } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxrJyBztw1x1ddz--1lWeS2uTKvYwdzr0",
+            authDomain: "know-me-not-c4569.firebaseapp.com",
+            databaseURL: "https://know-me-not-c4569-default-rtdb.firebaseio.com",
+            projectId: "know-me-not-c4569",
+            storageBucket: "know-me-not-c4569.firebasestorage.app",
+            messagingSenderId: "1090995976006",
+            appId: "1:1090995976006:web:c94b9e57f3af0f3b259747"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        // Make database and database functions available globally
+        window.database = database;
+        window.dbRef = ref;
+        window.dbPush = push;
+        window.dbSet = set;
+        window.dbOnValue = onValue;
+        window.dbOrderByChild = orderByChild;
+        window.dbStartAt = startAt;
+        window.dbQuery = query;
+        window.dbOnChildAdded = onChildAdded;
+        window.dbGet = get;
+        window.dbOnChildRemoved = onChildRemoved;
+    </script>
+    <script src="../../js/chat.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --secondary-color: #2d2d2d;
+            --accent-color: #4a4a4a;
+            --text-color: #ffffff;
+            --highlight-color: #7289da;
+            --success-color: #43b581;
+            --error-color: #f04747;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .logo-image {
+            position: absolute;
+            left: 20px;
+            height: 80px;
+            width: auto;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(114, 137, 218, 0.4);
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--highlight-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .tagline {
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: var(--primary-color);
+        }
+
+        .message {
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: var(--border-radius);
+            max-width: 80%;
+        }
+        
+        .user-message {
+            background-color: var(--highlight-color);
+            align-self: flex-end;
+        }
+        
+        .system-message {
+            background-color: var(--accent-color);
+            align-self: center;
+            text-align: center;
+        }
+        
+        .message-content {
+            word-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-username {
+            font-weight: bold;
+            margin-right: 10px;
+            color: #ffffff !important;
+            margin-bottom: 5px;
+        }
+        
+        .message-text {
+            word-break: break-word;
+            color: #ffffff;
+            margin-top: 5px;
+        }
+
+        .chat-input {
+            padding: 20px;
+            background-color: var(--secondary-color);
+            border-top: 1px solid var(--accent-color);
+            position: sticky;
+            bottom: 0;
+        }
+        
+        .chat-form {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #message-input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--accent-color);
+            color: var(--text-color);
+        }
+        
+        #message-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--highlight-color);
+        }
+        
+        .send-button {
+            padding: 10px 20px;
+            background-color: var(--highlight-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .send-button:hover {
+            background-color: #5b6eae;
+        }
+
+        .user-count {
+            text-align: center;
+            margin-top: 10px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        .typing-indicator {
+            color: #aaa;
+            font-style: italic;
+            margin-top: 5px;
+            display: none;
+            padding: 5px 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: inline-block;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span {
+            animation: typing-dot 1.4s infinite;
+            display: inline-block;
+            margin-right: 2px;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes typing-dot {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .logo-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo-image {
+                position: static;
+                height: 70px;
+                margin-bottom: 10px;
+            }
+
+            .logo {
+                font-size: 28px;
+            }
+
+            .tagline {
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-image {
+                height: 40px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+        }
+
+        .security-reminder {
+            color: var(--highlight-color);
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(114, 137, 218, 0.1);
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .moderator-notice {
+            color: var(--highlight-color);
+            font-size: 0.8em;
+            margin-top: 10px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Welcome Notification */
+        .welcome-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--highlight-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-width: 300px;
+            animation: slideIn 0.5s ease-out, fadeOut 0.5s ease-in 7.5s forwards;
+            display: none;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .welcome-notification {
+                top: 10px;
+                right: 10px;
+                max-width: 250px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--secondary-color);
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: var(--highlight-color);
+        }
+
+        .retention-notice {
+            font-size: 0.8em;
+            color: #aaa;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 5px 10px;
+            margin: 5px 0;
+            border-radius: var(--border-radius);
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-notification" id="welcomeNotification"></div>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="../../images/know-me-not-ninja.png" alt="KNOW-ME-NOT Logo" class="logo-image">
+                <div>
+                    <h1 class="logo">KNOW-ME-NOT</h1>
+                    <p class="tagline">Anonymous Social Platform</p>
+                </div>
+            </div>
+            <div class="security-reminder">Friendly reminder: your anonymous name is tied to your IP address for legal purposes. Remember to keep everything friendly and appropriate</div>
+        </header>
+
+        <div class="chat-container">
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input">
+                <form id="chat-form" class="chat-form">
+                    <input type="text" id="message-input" placeholder="Type your message..." required>
+                    <button type="submit" class="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+                <div class="typing-indicator" id="typingIndicator"></div>
+                <div class="user-count" id="userCount">1 user online</div>
+                <div class="moderator-notice">Moderators actively view messages for security purposes</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

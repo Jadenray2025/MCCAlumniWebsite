@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Marketing Specialist</title>
+    <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --dark-color: #2C3E50;
+            --light-color: #F7F9FC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-color) 0%, var(--primary-color) 100%);
+            min-height: 100vh;
+            color: var(--light-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+        }
+
+        .content {
+            padding-right: 2rem;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            color: var(--secondary-color);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--light-color);
+        }
+
+        .description {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .expertise {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .expertise-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .expertise-item h3 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .image-container {
+            position: relative;
+        }
+
+        .profile-image {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 20px;
+            left: 20px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 20px;
+            z-index: -1;
+        }
+
+        .stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: var(--dark-color);
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--secondary-color);
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+
+        .cta-button:hover {
+            background: transparent;
+            color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .cta-container {
+            text-align: center;
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .content {
+                padding-right: 0;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 3rem;
+            }
+
+            .expertise {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">Jane Smith</div>
+    <div class="container">
+        <div class="content">
+            <h1>Digital Marketing Specialist.</h1>
+            <p class="subtitle">Transforming brands through strategic digital presence</p>
+            <p class="description">
+                As a passionate digital marketing specialist, I craft data-driven strategies 
+                that elevate brands and drive measurable results. With expertise in SEO, 
+                content marketing, and social media management, I help businesses thrive 
+                in the digital landscape.
+            </p>
+            <div class="expertise">
+                <div class="expertise-item">
+                    <h3>Strategic Planning</h3>
+                    <p>Developing comprehensive digital marketing strategies aligned with business goals</p>
+                </div>
+                <div class="expertise-item">
+                    <h3>Analytics & ROI</h3>
+                    <p>Data-driven decision making and campaign optimization for maximum returns</p>
+                </div>
+                <div class="expertise-item">
+                    <h3>Content Strategy</h3>
+                    <p>Creating engaging content that resonates with target audiences</p>
+                </div>
+                <div class="expertise-item">
+                    <h3>Social Media</h3>
+                    <p>Building and managing impactful social media presence across platforms</p>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">150%</div>
+                    <div class="stat-label">Average ROI Increase</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Successful Campaigns</div>
+                </div>
+                <div class="stat-item">
+                    <div id="clientCount" class="stat-number">25</div>
+                    <div class="stat-label">Happy Clients Today</div>
+                </div>
+            </div>
+        </div>
+        <div class="right-column">
+            <div class="image-container">
+                <img src="/MCCAlumniWebsite/images/female-alumni.jpg" alt="Jane Smith - Digital Marketing Specialist" class="profile-image">
+                <div class="decoration"></div>
+            </div>
+            <div class="cta-container">
+                <a href="#" class="cta-button">Build Your Brand Today</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function animateCount() {
+            const countElement = document.getElementById('clientCount');
+            
+            // Get the stored count or start at 25 if no stored value exists
+            let currentCount = parseInt(localStorage.getItem('clientCount')) || 25;
+            
+            // Set initial count
+            countElement.textContent = currentCount;
+            
+            function updateCount() {
+                currentCount++;
+                if (currentCount > 450) {
+                    currentCount = 25;
+                }
+                // Update the display and store the new value
+                countElement.textContent = currentCount;
+                localStorage.setItem('clientCount', currentCount.toString());
+            }
+
+            // Update count every 4 seconds
+            setInterval(updateCount, 4000);
+        }
+
+        // Start the animation when the page loads
+        window.onload = animateCount;
+    </script>
+</body>
+</html> 
